@@ -1,5 +1,7 @@
 package com.chocola.scheduler;
 
+import lombok.extern.java.Log;
+
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
@@ -11,6 +13,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+@Log
 public class CSVReader {
 
     private CSVReader() {
@@ -27,10 +30,10 @@ public class CSVReader {
             while ((line = reader.readLine()) != null) {
                 lineNumber++;
                 try {
-                    Schedule s = scheduleFromCSVString(line);
+                    Schedule s = scheduleFromCSVString(lineNumber, line);
                     scheduleList.add(s);
                 } catch (Exception e) {
-                    System.err.println("Line " + lineNumber + ": " + e.getMessage());
+                    log.warning(lineMessage(lineNumber) + e.getMessage());
                 }
             }
         } catch (IOException e) {
@@ -40,7 +43,7 @@ public class CSVReader {
         return scheduleList;
     }
 
-    private static Schedule scheduleFromCSVString(String line) {
+    private static Schedule scheduleFromCSVString(int lineNumber, String line) {
         Pattern pattern = Pattern.compile("\"([^\"]*)\"|([^,]+)");
         Matcher matcher = pattern.matcher(line);
 
@@ -61,7 +64,7 @@ public class CSVReader {
             case "금" -> DayOfWeek.FRIDAY.toString();
             case "토" -> DayOfWeek.SATURDAY.toString();
             case "일" -> DayOfWeek.SUNDAY.toString();
-            default -> throw new IllegalArgumentException("Illegal dayOfWeek [" + dayOfWeekStr + "]. Write it correctly in [월,화,수,목,금,토,일].");
+            default -> throw new IllegalArgumentException(lineMessage(lineNumber) + "Illegal dayOfWeek [" + dayOfWeekStr + "]. Write it correctly in [월,화,수,목,금,토,일].");
         };
         String startTimeStr = parts[4];
         String endTimeStr = parts[5];
@@ -73,22 +76,30 @@ public class CSVReader {
         LocalTime startTime = LocalTime.parse(startTimeStr);
         LocalTime endTime = LocalTime.parse(endTimeStr);
 
-        if (startDate.isAfter(endDate)) {
+        if (isInvalidDate(startDate, endDate)) {
             throw new IllegalArgumentException("Illegal startDate and endDate! startDate must be before endDate");
         }
 
-        if (!isValidDate(endDate)) {
+        if (isInvalidDate(LocalDate.now(), endDate)) {
             throw new IllegalArgumentException("Illegal endDate [" + endDateStr + "]. It's already over");
         }
 
-        if (startTime.isAfter(endTime)) {
+        if (isInvalidTime(startTime, endTime)) {
             throw new IllegalArgumentException("Illegal startTime and endTime! startTime must be before endTime");
         }
 
         return Schedule.of(title, dayOfWeek, startTime, endTime, startDate, endDate);
     }
 
-    private static boolean isValidDate(LocalDate endDate) {
-        return endDate.isAfter(LocalDate.now());
+    private static boolean isInvalidDate(LocalDate before, LocalDate after) {
+        return before.isAfter(after);
+    }
+
+    private static boolean isInvalidTime(LocalTime before, LocalTime after) {
+        return before.isAfter(after);
+    }
+
+    private static String lineMessage(int num) {
+        return "Line " + num + ": ";
     }
 }

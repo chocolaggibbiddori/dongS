@@ -11,7 +11,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Log
-public class DefaultScheduler extends EnumMap<DayOfWeek, Set<Schedule>> implements Scheduler {
+class DefaultScheduler extends EnumMap<DayOfWeek, Set<Schedule>> implements Scheduler {
 
     private static final DefaultScheduler INSTANCE = new DefaultScheduler(DayOfWeek.class);
 
