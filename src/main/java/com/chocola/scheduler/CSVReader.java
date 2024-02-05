@@ -23,8 +23,6 @@ public class CSVReader {
         List<Schedule> scheduleList = new ArrayList<>();
 
         try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
-            reader.readLine();
-
             String line;
             int lineNumber = 1;
             while ((line = reader.readLine()) != null) {
