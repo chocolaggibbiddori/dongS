@@ -1,8 +1,8 @@
-package com.chocola;
+package com.dongs;
 
-import com.chocola.scheduler.CSVReader;
-import com.chocola.scheduler.Schedule;
-import com.chocola.scheduler.Scheduler;
+import com.dongs.scheduler.CSVReader;
+import com.dongs.scheduler.Schedule;
+import com.dongs.scheduler.Scheduler;
 
 import java.util.List;
 

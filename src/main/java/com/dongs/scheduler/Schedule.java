@@ -1,4 +1,4 @@
-package com.chocola.scheduler;
+package com.dongs.scheduler;
 
 import lombok.Data;
 
