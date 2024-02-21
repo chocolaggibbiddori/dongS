@@ -10,8 +10,6 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 @Log
 public class CSVReader {
@@ -26,9 +24,8 @@ public class CSVReader {
             String line;
             int lineNumber = 1;
             while ((line = reader.readLine()) != null) {
-                lineNumber++;
                 try {
-                    Schedule s = scheduleFromCSVString(lineNumber, line);
+                    Schedule s = scheduleFromCSVString(line);
                     scheduleList.add(s);
                 } catch (Exception e) {
                     log.warning(lineMessage(lineNumber) + e.getMessage());
@@ -41,19 +38,13 @@ public class CSVReader {
         return scheduleList;
     }
 
-    private static Schedule scheduleFromCSVString(int lineNumber, String line) {
-        Pattern pattern = Pattern.compile("\"([^\"]*)\"|([^,]+)");
-        Matcher matcher = pattern.matcher(line);
+    private static Schedule scheduleFromCSVString(String line) {
+        String[] parts = line.split("\\|");
 
-        String[] parts = new String[6];
-        for (int i = 0; i < parts.length && matcher.find(); i++) {
-            parts[i] = matcher.group(1) != null ? matcher.group(1) : matcher.group(2);
-        }
-
-        String titleStr = parts[0];
-        String startDateStr = parts[1];
-        String endDateStr = parts[2];
-        String dayOfWeekStr = parts[3];
+        String title = parts[0].trim();
+        String startDateStr = parts[1].trim();
+        String endDateStr = parts[2].trim();
+        String dayOfWeekStr = parts[3].trim();
         dayOfWeekStr = switch (dayOfWeekStr) {
             case "월" -> DayOfWeek.MONDAY.toString();
             case "화" -> DayOfWeek.TUESDAY.toString();
@@ -62,12 +53,11 @@ public class CSVReader {
             case "금" -> DayOfWeek.FRIDAY.toString();
             case "토" -> DayOfWeek.SATURDAY.toString();
             case "일" -> DayOfWeek.SUNDAY.toString();
-            default -> throw new IllegalArgumentException(lineMessage(lineNumber) + "Illegal dayOfWeek [" + dayOfWeekStr + "]. Write it correctly in [월,화,수,목,금,토,일].");
+            default -> throw new IllegalArgumentException("Illegal dayOfWeek [" + dayOfWeekStr + "]. Write it correctly in [월,화,수,목,금,토,일].");
         };
-        String startTimeStr = parts[4];
-        String endTimeStr = parts[5];
+        String startTimeStr = parts[4].trim();
+        String endTimeStr = parts[5].trim();
 
-        String title = titleStr.replaceAll("\"", "");
         LocalDate startDate = LocalDate.parse(startDateStr);
         LocalDate endDate = LocalDate.parse(endDateStr);
         DayOfWeek dayOfWeek = DayOfWeek.valueOf(dayOfWeekStr);
