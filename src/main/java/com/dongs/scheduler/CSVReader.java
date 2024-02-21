@@ -24,9 +24,8 @@ public class CSVReader {
             String line;
             int lineNumber = 1;
             while ((line = reader.readLine()) != null) {
-                lineNumber++;
                 try {
-                    Schedule s = scheduleFromCSVString(lineNumber, line);
+                    Schedule s = scheduleFromCSVString(line);
                     scheduleList.add(s);
                 } catch (Exception e) {
                     log.warning(lineMessage(lineNumber) + e.getMessage());
@@ -39,7 +38,7 @@ public class CSVReader {
         return scheduleList;
     }
 
-    private static Schedule scheduleFromCSVString(int lineNumber, String line) {
+    private static Schedule scheduleFromCSVString(String line) {
         String[] parts = line.split("\\|");
 
         String title = parts[0].trim();
@@ -54,7 +53,7 @@ public class CSVReader {
             case "금" -> DayOfWeek.FRIDAY.toString();
             case "토" -> DayOfWeek.SATURDAY.toString();
             case "일" -> DayOfWeek.SUNDAY.toString();
-            default -> throw new IllegalArgumentException(lineMessage(lineNumber) + "Illegal dayOfWeek [" + dayOfWeekStr + "]. Write it correctly in [월,화,수,목,금,토,일].");
+            default -> throw new IllegalArgumentException("Illegal dayOfWeek [" + dayOfWeekStr + "]. Write it correctly in [월,화,수,목,금,토,일].");
         };
         String startTimeStr = parts[4].trim();
         String endTimeStr = parts[5].trim();
