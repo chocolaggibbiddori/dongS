@@ -54,7 +54,7 @@ public class CSVReader {
             case "금" -> DayOfWeek.FRIDAY.toString();
             case "토" -> DayOfWeek.SATURDAY.toString();
             case "일" -> DayOfWeek.SUNDAY.toString();
-            default -> throw new IllegalArgumentException("Illegal dayOfWeek [" + dayOfWeekStr + "]. Write it correctly in [월,화,수,목,금,토,일].");
+            default -> throw new IllegalArgumentException("Illegal dayOfWeek [" + dayOfWeekStr + "]. Write it correctly in [월,화,수,목,금,토,일]");
         };
         String startTimeStr = parts[4].trim();
         String endTimeStr = parts[5].trim();
