@@ -22,8 +22,9 @@ public class CSVReader {
 
         try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
             String line;
-            int lineNumber = 1;
+            int lineNumber = 0;
             while ((line = reader.readLine()) != null) {
+                lineNumber++;
                 try {
                     Schedule s = scheduleFromCSVString(line);
                     scheduleList.add(s);
