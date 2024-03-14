@@ -33,7 +33,7 @@ public class CSVReader {
                 }
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            log.warning(e.getMessage());
         }
 
         return scheduleList;
@@ -43,27 +43,11 @@ public class CSVReader {
         String[] parts = line.split("\\|");
 
         String title = parts[0].trim();
-        String startDateStr = parts[1].trim();
-        String endDateStr = parts[2].trim();
-        String dayOfWeekStr = parts[3].trim();
-        dayOfWeekStr = switch (dayOfWeekStr) {
-            case "월" -> DayOfWeek.MONDAY.toString();
-            case "화" -> DayOfWeek.TUESDAY.toString();
-            case "수" -> DayOfWeek.WEDNESDAY.toString();
-            case "목" -> DayOfWeek.THURSDAY.toString();
-            case "금" -> DayOfWeek.FRIDAY.toString();
-            case "토" -> DayOfWeek.SATURDAY.toString();
-            case "일" -> DayOfWeek.SUNDAY.toString();
-            default -> throw new IllegalArgumentException("Illegal dayOfWeek [" + dayOfWeekStr + "]. Write it correctly in [월,화,수,목,금,토,일]");
-        };
-        String startTimeStr = parts[4].trim();
-        String endTimeStr = parts[5].trim();
-
-        LocalDate startDate = LocalDate.parse(startDateStr);
-        LocalDate endDate = LocalDate.parse(endDateStr);
-        DayOfWeek dayOfWeek = DayOfWeek.valueOf(dayOfWeekStr);
-        LocalTime startTime = LocalTime.parse(startTimeStr);
-        LocalTime endTime = LocalTime.parse(endTimeStr);
+        LocalDate startDate = LocalDate.parse(parts[1].trim());
+        LocalDate endDate = LocalDate.parse(parts[2].trim());
+        DayOfWeek dayOfWeek = getDayOfWeek(parts[3].trim());
+        LocalTime startTime = LocalTime.parse(parts[4].trim());
+        LocalTime endTime = LocalTime.parse(parts[5].trim());
 
         if (isInvalidDate(startDate, endDate)) {
             throw new IllegalArgumentException("Illegal startDate and endDate! startDate must be before endDate");
@@ -74,7 +58,7 @@ public class CSVReader {
         }
 
         if (isInvalidDate(LocalDate.now(), endDate)) {
-            throw new IllegalArgumentException("Illegal endDate [" + endDateStr + "]. It's already over");
+            throw new IllegalArgumentException("Illegal endDate [" + parts[2].trim() + "]. It's already over");
         }
 
         if (isInvalidTime(startTime, endTime)) {
@@ -82,6 +66,19 @@ public class CSVReader {
         }
 
         return Schedule.of(title, dayOfWeek, startTime, endTime, startDate, endDate);
+    }
+
+    private static DayOfWeek getDayOfWeek(String dayOfWeekStr) {
+        return switch (dayOfWeekStr) {
+            case "월" -> DayOfWeek.MONDAY;
+            case "화" -> DayOfWeek.TUESDAY;
+            case "수" -> DayOfWeek.WEDNESDAY;
+            case "목" -> DayOfWeek.THURSDAY;
+            case "금" -> DayOfWeek.FRIDAY;
+            case "토" -> DayOfWeek.SATURDAY;
+            case "일" -> DayOfWeek.SUNDAY;
+            default -> throw new IllegalArgumentException("Illegal dayOfWeek [" + dayOfWeekStr + "]. Write it correctly in [월,화,수,목,금,토,일]");
+        };
     }
 
     private static boolean isInvalidDate(LocalDate before, LocalDate after) {
