@@ -69,6 +69,10 @@ public class CSVReader {
             throw new IllegalArgumentException("Illegal startDate and endDate! startDate must be before endDate");
         }
 
+        if (isInvalidDayOfWeek(startDate, endDate, dayOfWeek)) {
+            throw new IllegalArgumentException("Illegal dayOfWeek! dayOfWeek must exist between startDate and endDate");
+        }
+
         if (isInvalidDate(LocalDate.now(), endDate)) {
             throw new IllegalArgumentException("Illegal endDate [" + endDateStr + "]. It's already over");
         }
@@ -82,6 +86,11 @@ public class CSVReader {
 
     private static boolean isInvalidDate(LocalDate before, LocalDate after) {
         return before.isAfter(after);
+    }
+
+    private static boolean isInvalidDayOfWeek(LocalDate startDate, LocalDate endDate, DayOfWeek dayOfWeek) {
+        return startDate.datesUntil(endDate.plusDays(1))
+                .noneMatch(d -> d.getDayOfWeek() == dayOfWeek);
     }
 
     private static boolean isInvalidTime(LocalTime before, LocalTime after) {
