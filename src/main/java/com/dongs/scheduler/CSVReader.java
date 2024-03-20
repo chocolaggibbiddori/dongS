@@ -57,7 +57,7 @@ public class CSVReader {
         }
 
         if (isInvalidDate(LocalDate.now(), endDate)) {
-            throw new IllegalArgumentException("Illegal endDate [" + parts[2].trim() + "]. It's already over");
+            throw new IllegalArgumentException("Illegal endDate [%s]. It's already over".formatted(parts[2].trim()));
         }
 
         if (isInvalidTime(startTime, endTime)) {
@@ -76,7 +76,7 @@ public class CSVReader {
             case "금" -> DayOfWeek.FRIDAY;
             case "토" -> DayOfWeek.SATURDAY;
             case "일" -> DayOfWeek.SUNDAY;
-            default -> throw new IllegalArgumentException("Illegal dayOfWeek [" + dayOfWeekStr + "]. Write it correctly in [월,화,수,목,금,토,일]");
+            default -> throw new IllegalArgumentException("Illegal dayOfWeek [%s]. Write it correctly in [월,화,수,목,금,토,일]".formatted(dayOfWeekStr));
         };
     }
 
@@ -94,6 +94,6 @@ public class CSVReader {
     }
 
     private static String lineMessage(int num) {
-        return "Line " + num + ": ";
+        return "Line %d: ".formatted(num);
     }
 }
