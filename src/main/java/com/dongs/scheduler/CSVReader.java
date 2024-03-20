@@ -19,6 +19,7 @@ public class CSVReader {
     }
 
     public static List<Schedule> readSchedulesFromCSV(String filePath) {
+        // TODO [2024-03-21]: 자동 삭제 기능 추가 필요
         List<Schedule> scheduleList = new ArrayList<>();
 
         try (LineNumberReader reader = new LineNumberReader(new FileReader(filePath))) {

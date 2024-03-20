@@ -19,6 +19,7 @@ public class Yaml {
     }
 
     public static Setting readSettings(String configPath) throws InvalidExtensionException, FileNotFoundException {
+        // TODO [2024-03-21]: Required test
         Objects.requireNonNull(configPath, "configPath is null");
         checkExtension(configPath);
 
