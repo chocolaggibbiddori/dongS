@@ -2,9 +2,9 @@ package com.dongs.scheduler;
 
 import lombok.extern.java.Log;
 
-import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.LineNumberReader;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -20,11 +20,10 @@ public class CSVReader {
     public static List<Schedule> readSchedulesFromCSV(String filePath) {
         List<Schedule> scheduleList = new ArrayList<>();
 
-        try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
+        try (LineNumberReader reader = new LineNumberReader(new FileReader(filePath))) {
             String line;
-            int lineNumber = 0;
             while ((line = reader.readLine()) != null) {
-                lineNumber++;
+                int lineNumber = reader.getLineNumber();
                 try {
                     Schedule s = scheduleFromCSVString(line);
                     scheduleList.add(s);
