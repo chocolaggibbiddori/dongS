@@ -42,7 +42,7 @@ class DefaultScheduler extends EnumMap<DayOfWeek, Set<Schedule>> implements Sche
 
             for (Schedule sch : scheduleSet) {
                 if (isClash(sch, schedule)) {
-                    log.info("[Clash] " + schedule.getTitle() + " is impossible. cause: " + sch);
+                    log.info("[Clash] \"%s\" is impossible. cause: %s".formatted(schedule.getTitle(), sch));
                     clash = true;
                     break;
                 }
@@ -60,11 +60,11 @@ class DefaultScheduler extends EnumMap<DayOfWeek, Set<Schedule>> implements Sche
         LocalDate s2StartDate = s2.getStartDate();
         LocalDate s2EndDate = s2.getEndDate();
 
-        if (s2StartDate.isAfter(s1EndDate) || s2StartDate.isEqual((s1EndDate))) {
+        if (s2StartDate.isAfter(s1EndDate)) {
             return false;
         }
 
-        if (s2EndDate.isBefore(s1StartDate) || s2EndDate.isEqual(s1StartDate)) {
+        if (s2EndDate.isBefore(s1StartDate)) {
             return false;
         }
 

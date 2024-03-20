@@ -2,12 +2,13 @@ package com.dongs.scheduler;
 
 import lombok.extern.java.Log;
 
-import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.LineNumberReader;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,57 +21,63 @@ public class CSVReader {
     public static List<Schedule> readSchedulesFromCSV(String filePath) {
         List<Schedule> scheduleList = new ArrayList<>();
 
-        try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
+        try (LineNumberReader reader = new LineNumberReader(new FileReader(filePath))) {
             String line;
-            int lineNumber = 0;
             while ((line = reader.readLine()) != null) {
-                lineNumber++;
+                if (line.isBlank() || isAnnotation(line)) continue;
+
+                int lineNumber = reader.getLineNumber();
                 try {
                     Schedule s = scheduleFromCSVString(line);
                     scheduleList.add(s);
                 } catch (Exception e) {
-                    log.warning(lineMessage(lineNumber) + e.getMessage());
+                    log.warning(lineMessage(lineNumber, e.getMessage()));
                 }
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            log.warning(e.getMessage());
         }
 
         return scheduleList;
     }
 
+    private static boolean isAnnotation(String line) {
+        return line.startsWith("//");
+    }
+
     private static Schedule scheduleFromCSVString(String line) {
         String[] parts = line.split("\\|");
 
-        String title = parts[0].trim();
-        String startDateStr = parts[1].trim();
-        String endDateStr = parts[2].trim();
-        String dayOfWeekStr = parts[3].trim();
-        dayOfWeekStr = switch (dayOfWeekStr) {
-            case "월" -> DayOfWeek.MONDAY.toString();
-            case "화" -> DayOfWeek.TUESDAY.toString();
-            case "수" -> DayOfWeek.WEDNESDAY.toString();
-            case "목" -> DayOfWeek.THURSDAY.toString();
-            case "금" -> DayOfWeek.FRIDAY.toString();
-            case "토" -> DayOfWeek.SATURDAY.toString();
-            case "일" -> DayOfWeek.SUNDAY.toString();
-            default -> throw new IllegalArgumentException("Illegal dayOfWeek [" + dayOfWeekStr + "]. Write it correctly in [월,화,수,목,금,토,일]");
-        };
-        String startTimeStr = parts[4].trim();
-        String endTimeStr = parts[5].trim();
+        String title;
+        LocalDate startDate;
+        LocalDate endDate;
+        DayOfWeek dayOfWeek;
+        LocalTime startTime;
+        LocalTime endTime;
 
-        LocalDate startDate = LocalDate.parse(startDateStr);
-        LocalDate endDate = LocalDate.parse(endDateStr);
-        DayOfWeek dayOfWeek = DayOfWeek.valueOf(dayOfWeekStr);
-        LocalTime startTime = LocalTime.parse(startTimeStr);
-        LocalTime endTime = LocalTime.parse(endTimeStr);
+        try {
+            title = parts[0].trim();
+            startDate = LocalDate.parse(parts[1].trim());
+            endDate = LocalDate.parse(parts[2].trim());
+            dayOfWeek = getDayOfWeek(parts[3].trim());
+            startTime = LocalTime.parse(parts[4].trim());
+            endTime = LocalTime.parse(parts[5].trim());
+        } catch (ArrayIndexOutOfBoundsException e) {
+            throw new IllegalArgumentException("Illegal data! Please fill in the appropriate data in the form");
+        } catch (DateTimeParseException e) {
+            throw new IllegalArgumentException("Illegal data! The date or time format is incorrect. The date format is 'yyyy-MM-dd' and the time format is 'hh:mm'");
+        }
 
         if (isInvalidDate(startDate, endDate)) {
             throw new IllegalArgumentException("Illegal startDate and endDate! startDate must be before endDate");
         }
 
+        if (isInvalidDayOfWeek(startDate, endDate, dayOfWeek)) {
+            throw new IllegalArgumentException("Illegal dayOfWeek! dayOfWeek must exist between startDate and endDate");
+        }
+
         if (isInvalidDate(LocalDate.now(), endDate)) {
-            throw new IllegalArgumentException("Illegal endDate [" + endDateStr + "]. It's already over");
+            throw new IllegalArgumentException("Illegal endDate [%s]. It's already over".formatted(parts[2].trim()));
         }
 
         if (isInvalidTime(startTime, endTime)) {
@@ -80,15 +87,33 @@ public class CSVReader {
         return Schedule.of(title, dayOfWeek, startTime, endTime, startDate, endDate);
     }
 
+    private static DayOfWeek getDayOfWeek(String dayOfWeekStr) {
+        return switch (dayOfWeekStr) {
+            case "월" -> DayOfWeek.MONDAY;
+            case "화" -> DayOfWeek.TUESDAY;
+            case "수" -> DayOfWeek.WEDNESDAY;
+            case "목" -> DayOfWeek.THURSDAY;
+            case "금" -> DayOfWeek.FRIDAY;
+            case "토" -> DayOfWeek.SATURDAY;
+            case "일" -> DayOfWeek.SUNDAY;
+            default -> throw new IllegalArgumentException("Illegal dayOfWeek [%s]. Write it correctly in [월,화,수,목,금,토,일]".formatted(dayOfWeekStr));
+        };
+    }
+
     private static boolean isInvalidDate(LocalDate before, LocalDate after) {
         return before.isAfter(after);
+    }
+
+    private static boolean isInvalidDayOfWeek(LocalDate startDate, LocalDate endDate, DayOfWeek dayOfWeek) {
+        return startDate.datesUntil(endDate.plusDays(1))
+                .noneMatch(d -> d.getDayOfWeek() == dayOfWeek);
     }
 
     private static boolean isInvalidTime(LocalTime before, LocalTime after) {
         return before.isAfter(after);
     }
 
-    private static String lineMessage(int num) {
-        return "Line " + num + ": ";
+    private static String lineMessage(int num, String msg) {
+        return "Line %d: %s".formatted(num, msg);
     }
 }

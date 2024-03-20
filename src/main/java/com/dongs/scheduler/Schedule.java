@@ -30,7 +30,7 @@ public class Schedule implements Comparable<Schedule> {
     }
 
     public String toString() {
-        return "[" + title + " " + startDate + " ~ " + endDate + " (" + dayOfWeek + ") " + startTime + " ~ " + endTime + "]";
+        return "[%s %s ~ %s (%s) %s ~ %s]".formatted(title, startDate, endDate, dayOfWeek, startTime, endTime);
     }
 
     @Override
