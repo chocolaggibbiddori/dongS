@@ -42,7 +42,7 @@ class DefaultScheduler extends EnumMap<DayOfWeek, Set<Schedule>> implements Sche
 
             for (Schedule sch : scheduleSet) {
                 if (isClash(sch, schedule)) {
-                    log.info("[Clash] " + schedule.getTitle() + " is impossible. cause: " + sch);
+                    log.info("[Clash] \"%s\" is impossible. cause: %s".formatted(schedule.getTitle(), sch));
                     clash = true;
                     break;
                 }
