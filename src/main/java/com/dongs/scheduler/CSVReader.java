@@ -24,7 +24,7 @@ public class CSVReader {
         try (LineNumberReader reader = new LineNumberReader(new FileReader(filePath))) {
             String line;
             while ((line = reader.readLine()) != null) {
-                if (isAnnotation(line)) continue;
+                if (line.isBlank() || isAnnotation(line)) continue;
 
                 int lineNumber = reader.getLineNumber();
                 try {
