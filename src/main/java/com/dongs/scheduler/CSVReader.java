@@ -31,7 +31,7 @@ public class CSVReader {
                     Schedule s = scheduleFromCSVString(line);
                     scheduleList.add(s);
                 } catch (Exception e) {
-                    log.warning(lineMessage(lineNumber) + e.getMessage());
+                    log.warning(lineMessage(lineNumber, e.getMessage()));
                 }
             }
         } catch (IOException e) {
@@ -113,7 +113,7 @@ public class CSVReader {
         return before.isAfter(after);
     }
 
-    private static String lineMessage(int num) {
-        return "Line %d: ".formatted(num);
+    private static String lineMessage(int num, String msg) {
+        return "Line %d: %s".formatted(num, msg);
     }
 }
