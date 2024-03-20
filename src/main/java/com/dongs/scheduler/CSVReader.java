@@ -8,6 +8,7 @@ import java.io.LineNumberReader;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -47,12 +48,25 @@ public class CSVReader {
     private static Schedule scheduleFromCSVString(String line) {
         String[] parts = line.split("\\|");
 
-        String title = parts[0].trim();
-        LocalDate startDate = LocalDate.parse(parts[1].trim());
-        LocalDate endDate = LocalDate.parse(parts[2].trim());
-        DayOfWeek dayOfWeek = getDayOfWeek(parts[3].trim());
-        LocalTime startTime = LocalTime.parse(parts[4].trim());
-        LocalTime endTime = LocalTime.parse(parts[5].trim());
+        String title;
+        LocalDate startDate;
+        LocalDate endDate;
+        DayOfWeek dayOfWeek;
+        LocalTime startTime;
+        LocalTime endTime;
+
+        try {
+            title = parts[0].trim();
+            startDate = LocalDate.parse(parts[1].trim());
+            endDate = LocalDate.parse(parts[2].trim());
+            dayOfWeek = getDayOfWeek(parts[3].trim());
+            startTime = LocalTime.parse(parts[4].trim());
+            endTime = LocalTime.parse(parts[5].trim());
+        } catch (ArrayIndexOutOfBoundsException e) {
+            throw new IllegalArgumentException("Illegal data! Please fill in the appropriate data in the form");
+        } catch (DateTimeParseException e) {
+            throw new IllegalArgumentException("Illegal data! The date or time format is incorrect. The date format is 'yyyy-MM-dd' and the time format is 'hh:mm'");
+        }
 
         if (isInvalidDate(startDate, endDate)) {
             throw new IllegalArgumentException("Illegal startDate and endDate! startDate must be before endDate");
