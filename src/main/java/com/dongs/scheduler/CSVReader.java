@@ -2,6 +2,7 @@ package com.dongs.scheduler;
 
 import lombok.extern.java.Log;
 
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.LineNumberReader;
@@ -18,7 +19,7 @@ public class CSVReader {
     private CSVReader() {
     }
 
-    public static List<Schedule> readSchedulesFromCSV(String filePath) {
+    public static List<Schedule> readSchedulesFromCSV(String filePath) throws FileNotFoundException {
         // TODO [2024-03-21]: 자동 삭제 기능 추가 필요
         List<Schedule> scheduleList = new ArrayList<>();
 
@@ -35,6 +36,8 @@ public class CSVReader {
                     log.warning(lineMessage(lineNumber, e.getMessage()));
                 }
             }
+        } catch (FileNotFoundException e) {
+            throw e;
         } catch (IOException e) {
             log.warning(e.getMessage());
         }
