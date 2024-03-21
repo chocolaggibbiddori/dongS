@@ -26,7 +26,7 @@ public class Yaml {
             parseYamlToNodeTree(reader);
             parseNodeTreeToSetting(Node.ROOT);
         } catch (FileNotFoundException e) {
-            throw new FileNotFoundException(e.getMessage());
+            throw e;
         } catch (IOException e) {
             log.warning(e.getMessage());
         }
