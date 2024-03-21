@@ -1,8 +1,5 @@
 package com.dongs.settings;
 
-import lombok.Getter;
-
-@Getter
 public class Setting {
 
     private static final Setting INSTANCE = new Setting();
@@ -14,5 +11,9 @@ public class Setting {
 
     public static Setting getInstance() {
         return INSTANCE;
+    }
+
+    public Schedule schedule() {
+        return schedule;
     }
 }

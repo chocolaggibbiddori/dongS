@@ -19,7 +19,7 @@ public class Schedule {
         this.autoRemove = autoRemove ? AutoRemove.TRUE : AutoRemove.FALSE;
     }
 
-    public BooleanValueSetting getAutoRemove() {
+    public BooleanValueSetting autoRemove() {
         return autoRemove;
     }
 }
