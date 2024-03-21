@@ -19,7 +19,6 @@ public class Yaml {
     }
 
     public static Setting readSettings(String configPath) throws InvalidExtensionException, FileNotFoundException {
-        // TODO [2024-03-21]: Required test
         Objects.requireNonNull(configPath, "configPath is null");
         checkExtension(configPath);
 
@@ -56,16 +55,19 @@ public class Yaml {
 
     private static String removeAnnotation(String s) {
         int i = s.indexOf("#");
-        return s.substring(0, i);
+        return i == -1 ? s : s.substring(0, i);
     }
 
     private static void createNodeTree(String s) {
         String[] split = s.split(":");
         String keyOrigin = split[0];
-        String valueOrigin = split[1];
-
         String key = keyOrigin.trim();
-        String value = valueOrigin.isBlank() ? "" : valueOrigin.substring(1).trim();
+        String value;
+        if (split.length == 1) value = "";
+        else {
+            String valueOrigin = split[1];
+            value = valueOrigin.isBlank() ? "" : valueOrigin.substring(1).trim();
+        }
         int indent = keyOrigin.length() - key.length();
         Node node = new Node(indent, key, value);
 
@@ -84,14 +86,15 @@ public class Yaml {
         }
 
         try {
-            Class<?> parentClass = Class.forName(kebabToPascal(node.parent.key));
+            Class<?> parentClass = Class.forName("com.dongs.settings.%s".formatted(kebabToPascal(node.parent.key)));
             Object parentInstance = parentClass
                     .getDeclaredMethod("getInstance")
                     .invoke(null);
             String setterMethodName = "set" + kebabToPascal(node.key);
-            Class<?> valueClass = getValueClass(node.value);
+            Class<?> valueClass = getClassOf(node.value);
             Method setterMethod = parentClass.getDeclaredMethod(setterMethodName, valueClass);
-            setterMethod.invoke(parentInstance, node.value);
+            Object value = getValueOf(node.value, valueClass);
+            setterMethod.invoke(parentInstance, value);
         } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException | ClassNotFoundException ignored) {
         }
     }
@@ -108,7 +111,7 @@ public class Yaml {
         return pascal.toString();
     }
 
-    private static Class<?> getValueClass(String value) {
+    private static Class<?> getClassOf(String value) {
         if (value.equalsIgnoreCase("true") || value.equalsIgnoreCase("false")) {
             return boolean.class;
         }
@@ -120,6 +123,12 @@ public class Yaml {
         }
 
         return String.class;
+    }
+
+    private static Object getValueOf(String value, Class<?> valueType) {
+        if (valueType.equals(boolean.class)) return Boolean.parseBoolean(value);
+        else if (valueType.equals(int.class)) return Integer.parseInt(value);
+        return value;
     }
 
     private static class Node {
