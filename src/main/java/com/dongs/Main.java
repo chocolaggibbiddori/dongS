@@ -18,7 +18,9 @@ public class Main {
         String dataPath = "src/main/resources/data.csv";
 
         try {
+            // TODO [2024-03-22]: 인스턴스 만들 때 미리 세팅 해버리기?
             Yaml.readSettings(configPath);
+            // TODO [2024-03-22]: getScheduleList 메서드 사용? CSVReader는 내부 클래스로 감추고
             List<Schedule> scheduleList = CSVReader.readSchedulesFromCSV(dataPath);
             Scheduler scheduler = Scheduler.getInstance();
             scheduler.add(scheduleList);

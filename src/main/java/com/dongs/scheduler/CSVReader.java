@@ -14,13 +14,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Log
-public class CSVReader {
+public class CSVReader { // TODO [2024-03-22]: final ?
 
     private CSVReader() {
     }
 
     public static List<Schedule> readSchedulesFromCSV(String filePath) throws FileNotFoundException {
         // TODO [2024-03-21]: 자동 삭제 기능 추가 필요
+        // TODO [2024-03-22]: filePath 굳이 매개변수로 받을 필요 있나?
         List<Schedule> scheduleList = new ArrayList<>();
 
         try (LineNumberReader reader = new LineNumberReader(new FileReader(filePath))) {
