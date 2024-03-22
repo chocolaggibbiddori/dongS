@@ -14,12 +14,12 @@ import java.util.Objects;
 import java.util.Set;
 
 @Log
-public class Yaml {
+final class Yaml {
 
     private Yaml() {
     }
 
-    public static Setting readSettings(String configPath) throws InvalidExtensionException, FileNotFoundException {
+    static Setting readSettings(String configPath) throws InvalidExtensionException, FileNotFoundException {
         Objects.requireNonNull(configPath, "configPath is null");
         checkExtension(configPath);
 
