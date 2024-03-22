@@ -1,4 +1,4 @@
-package com.dongs.settings;
+package com.dongs.common.exception;
 
 public class InvalidExtensionException extends Exception {
 

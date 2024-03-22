@@ -1,5 +1,6 @@
 package com.dongs.scheduler;
 
+import com.dongs.common.exception.InvalidExtensionException;
 import lombok.extern.java.Log;
 
 import java.io.FileNotFoundException;
@@ -12,12 +13,16 @@ import java.time.LocalTime;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Log
 final class CsvReader {
 
-    static List<Schedule> readSchedulesFromCsv(String csvPath) throws FileNotFoundException {
+    static List<Schedule> readSchedulesFromCsv(String csvPath) throws InvalidExtensionException, FileNotFoundException {
         // TODO [2024-03-21]: 자동 삭제 기능 추가 필요
+        Objects.requireNonNull(csvPath, "csvPath is null");
+        checkExtension(csvPath);
+
         List<Schedule> scheduleList = new ArrayList<>();
 
         try (LineNumberReader reader = new LineNumberReader(new FileReader(csvPath))) {
@@ -40,6 +45,10 @@ final class CsvReader {
         }
 
         return scheduleList;
+    }
+
+    private static void checkExtension(String csvPath) throws InvalidExtensionException {
+        if (!csvPath.endsWith(".csv")) throw new InvalidExtensionException("Data file must have '.csv' extension");
     }
 
     private static boolean isAnnotation(String line) {
