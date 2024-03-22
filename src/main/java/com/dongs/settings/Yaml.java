@@ -1,5 +1,6 @@
 package com.dongs.settings;
 
+import com.dongs.common.exception.InvalidExtensionException;
 import lombok.extern.java.Log;
 
 import java.io.BufferedReader;
