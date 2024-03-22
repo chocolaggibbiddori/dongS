@@ -1,5 +1,6 @@
 package com.dongs.scheduler;
 
+import com.dongs.common.exception.InvalidExtensionException;
 import lombok.extern.java.Log;
 
 import java.io.FileNotFoundException;
@@ -32,10 +33,13 @@ final class DefaultScheduler extends EnumMap<DayOfWeek, Set<Schedule>> implement
     }
 
     @Override
-    public void readAndInspect() throws FileNotFoundException {
-        String csvPath = "src/main/resources/data.csv";
-        List<Schedule> scheduleList = CsvReader.readSchedulesFromCsv(csvPath);
-        inspect(scheduleList);
+    public void readAndInspect(String filePath) throws FileNotFoundException {
+        try {
+            List<Schedule> scheduleList = CsvReader.readSchedulesFromCsv(filePath);
+            inspect(scheduleList);
+        } catch (InvalidExtensionException e) {
+            log.info(e.getMessage());
+        }
     }
 
     private void inspect(Collection<Schedule> schedules) {

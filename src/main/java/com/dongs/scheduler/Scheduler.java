@@ -4,7 +4,7 @@ import java.io.FileNotFoundException;
 
 public interface Scheduler {
 
-    void readAndInspect() throws FileNotFoundException;
+    void readAndInspect(String filePath) throws FileNotFoundException;
 
     static Scheduler getInstance() {
         return DefaultScheduler.getInstance();

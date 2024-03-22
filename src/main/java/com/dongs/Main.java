@@ -14,11 +14,9 @@ public class Main {
         String configPath = "src/main/resources/config.yml";
 
         try {
-            // TODO [2024-03-22]: 인스턴스 만들 때 미리 세팅 해버리기?
-            Yaml.readSettings(configPath);
-
+            String filePath = "src/main/resources/data.csv";
             Scheduler scheduler = Scheduler.getInstance();
-            scheduler.readAndInspect();
+            scheduler.readAndInspect(filePath);
         } catch (FileNotFoundException e) {
             log.info("There is no file");
         } catch (InvalidExtensionException e) {
