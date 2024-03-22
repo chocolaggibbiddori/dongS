@@ -1,10 +1,10 @@
 package com.dongs.scheduler;
 
-import java.util.Collection;
+import java.io.FileNotFoundException;
 
 public interface Scheduler {
 
-    void add(Collection<Schedule> schedules);
+    void readAndInspect() throws FileNotFoundException;
 
     static Scheduler getInstance() {
         return DefaultScheduler.getInstance();
