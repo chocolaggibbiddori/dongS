@@ -32,7 +32,7 @@ final class CsvReader {
 
                 int lineNumber = reader.getLineNumber();
                 try {
-                    Schedule s = scheduleFromCSVString(line);
+                    Schedule s = scheduleFromCsvString(line);
                     scheduleList.add(s);
                 } catch (Exception e) {
                     log.warning(lineMessage(lineNumber, e.getMessage()));
@@ -55,7 +55,7 @@ final class CsvReader {
         return line.startsWith("//");
     }
 
-    private static Schedule scheduleFromCSVString(String line) {
+    private static Schedule scheduleFromCsvString(String line) {
         String[] parts = line.split("\\|");
 
         String title;
