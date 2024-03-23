@@ -15,10 +15,9 @@ public class Main {
 
         try {
             scheduler.readAndInspect(filePath);
+            System.out.println("Finish!");
         } catch (InvalidExtensionException | FileNotFoundException e) {
             log.info("There is no data file");
         }
-
-        System.out.println("Finish!");
     }
 }
