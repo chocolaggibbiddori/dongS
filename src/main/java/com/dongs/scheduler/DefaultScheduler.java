@@ -4,6 +4,7 @@ import com.dongs.common.exception.InvalidExtensionException;
 import lombok.extern.java.Log;
 
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -33,12 +34,14 @@ final class DefaultScheduler extends EnumMap<DayOfWeek, Set<Schedule>> implement
     }
 
     @Override
-    public void readAndInspect(String filePath) throws FileNotFoundException {
-        try {
-            List<Schedule> scheduleList = CsvReader.readSchedulesFromCsv(filePath);
+    public void readAndInspect(String filePath) throws InvalidExtensionException, FileNotFoundException {
+        try (CsvReader reader = new CsvReader(filePath)) {
+            List<Schedule> scheduleList = reader.readSchedules();
             inspect(scheduleList);
-        } catch (InvalidExtensionException e) {
-            log.info(e.getMessage());
+        } catch (InvalidExtensionException | FileNotFoundException e) {
+            throw e;
+        } catch (IOException e) {
+            log.warning(e.getMessage());
         }
     }
 

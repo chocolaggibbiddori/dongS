@@ -5,7 +5,6 @@ import lombok.extern.java.Log;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;
-import java.io.IOException;
 import java.io.LineNumberReader;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
@@ -14,48 +13,53 @@ import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Stream;
 
 @Log
-final class CsvReader {
+class CsvReader extends LineNumberReader {
 
-    static List<Schedule> readSchedulesFromCsv(String csvPath) throws InvalidExtensionException, FileNotFoundException {
-        // TODO [2024-03-21]: 자동 삭제 기능 추가 필요
+    CsvReader(String csvPath) throws FileNotFoundException, InvalidExtensionException {
+        super(new FileReader(csvPath));
         Objects.requireNonNull(csvPath, "csvPath is null");
         checkExtension(csvPath);
+    }
 
+    private void checkExtension(String csvPath) throws InvalidExtensionException {
+        if (!csvPath.endsWith(".csv")) throw new InvalidExtensionException("Data file must have '.csv' extension");
+    }
+
+    List<Schedule> readSchedules() {
+        // TODO [2024-03-21]: 자동 삭제 기능 추가 필요
         List<Schedule> scheduleList = new ArrayList<>();
 
-        try (LineNumberReader reader = new LineNumberReader(new FileReader(csvPath))) {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                if (line.isBlank() || isAnnotation(line)) continue;
-
-                int lineNumber = reader.getLineNumber();
-                try {
-                    Schedule s = scheduleFromCsvString(line);
-                    scheduleList.add(s);
-                } catch (Exception e) {
-                    log.warning(lineMessage(lineNumber, e.getMessage()));
-                }
-            }
-        } catch (FileNotFoundException e) {
-            throw e;
-        } catch (IOException e) {
-            log.warning(e.getMessage());
+        try (Stream<String> lines = lines()) {
+            lines
+                    .filter(l -> !l.isBlank())
+                    .filter(l -> !isAnnotation(l))
+                    .map(this::convertToSchedule)
+                    .filter(Objects::nonNull)
+                    .forEach(scheduleList::add);
         }
 
         return scheduleList;
     }
 
-    private static void checkExtension(String csvPath) throws InvalidExtensionException {
-        if (!csvPath.endsWith(".csv")) throw new InvalidExtensionException("Data file must have '.csv' extension");
+    private Schedule convertToSchedule(String line) {
+        try {
+            return scheduleFromCsvString(line);
+        } catch (IllegalArgumentException e) {
+            int lineNumber = getLineNumber();
+            String message = e.getMessage();
+            log.warning(lineMessage(lineNumber, message));
+            return null;
+        }
     }
 
-    private static boolean isAnnotation(String line) {
+    private boolean isAnnotation(String line) {
         return line.startsWith("//");
     }
 
-    private static Schedule scheduleFromCsvString(String line) {
+    private Schedule scheduleFromCsvString(String line) {
         String[] parts = line.split("\\|");
 
         String title;
@@ -97,7 +101,7 @@ final class CsvReader {
         return Schedule.of(title, dayOfWeek, startTime, endTime, startDate, endDate);
     }
 
-    private static DayOfWeek getDayOfWeek(String dayOfWeekStr) {
+    private DayOfWeek getDayOfWeek(String dayOfWeekStr) {
         return switch (dayOfWeekStr) {
             case "월" -> DayOfWeek.MONDAY;
             case "화" -> DayOfWeek.TUESDAY;
@@ -106,25 +110,24 @@ final class CsvReader {
             case "금" -> DayOfWeek.FRIDAY;
             case "토" -> DayOfWeek.SATURDAY;
             case "일" -> DayOfWeek.SUNDAY;
-            default ->
-                    throw new IllegalArgumentException("Illegal dayOfWeek [%s]. Write it correctly in [월,화,수,목,금,토,일]".formatted(dayOfWeekStr));
+            default -> throw new IllegalArgumentException("Illegal dayOfWeek [%s]. Write it correctly in [월,화,수,목,금,토,일]".formatted(dayOfWeekStr));
         };
     }
 
-    private static boolean isInvalidDate(LocalDate before, LocalDate after) {
+    private boolean isInvalidDate(LocalDate before, LocalDate after) {
         return before.isAfter(after);
     }
 
-    private static boolean isInvalidDayOfWeek(LocalDate startDate, LocalDate endDate, DayOfWeek dayOfWeek) {
+    private boolean isInvalidDayOfWeek(LocalDate startDate, LocalDate endDate, DayOfWeek dayOfWeek) {
         return startDate.datesUntil(endDate.plusDays(1))
                 .noneMatch(d -> d.getDayOfWeek() == dayOfWeek);
     }
 
-    private static boolean isInvalidTime(LocalTime before, LocalTime after) {
+    private boolean isInvalidTime(LocalTime before, LocalTime after) {
         return before.isAfter(after);
     }
 
-    private static String lineMessage(int num, String msg) {
+    private String lineMessage(int num, String msg) {
         return "Line %d: %s".formatted(num, msg);
     }
 }
