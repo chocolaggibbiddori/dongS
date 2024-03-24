@@ -34,8 +34,10 @@ final class DefaultScheduler extends EnumMap<DayOfWeek, Set<Schedule>> implement
     }
 
     @Override
-    public void readAndInspect(String filePath) throws InvalidExtensionException, FileNotFoundException {
-        try (CsvReader reader = new CsvReader(filePath)) {
+    public void readAndInspect(String csvPath) throws InvalidExtensionException, FileNotFoundException {
+        Objects.requireNonNull(csvPath, "csvPath is null");
+
+        try (CsvReader reader = new CsvReader(csvPath)) {
             List<Schedule> scheduleList = reader.readSchedules();
             inspect(scheduleList);
         } catch (InvalidExtensionException | FileNotFoundException e) {

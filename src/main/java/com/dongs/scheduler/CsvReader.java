@@ -20,7 +20,6 @@ class CsvReader extends LineNumberReader {
 
     CsvReader(String csvPath) throws FileNotFoundException, InvalidExtensionException {
         super(new FileReader(csvPath));
-        Objects.requireNonNull(csvPath, "csvPath is null");
         checkExtension(csvPath);
     }
 
