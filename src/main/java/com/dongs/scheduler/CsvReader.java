@@ -10,7 +10,6 @@ import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeParseException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Stream;
@@ -28,19 +27,14 @@ class CsvReader extends LineNumberReader {
     }
 
     List<Schedule> readSchedules() {
-        // TODO [2024-03-21]: 자동 삭제 기능 추가 필요
-        List<Schedule> scheduleList = new ArrayList<>();
-
         try (Stream<String> lines = lines()) {
-            lines
+            return lines
                     .filter(l -> !l.isBlank())
                     .filter(l -> !isAnnotation(l))
                     .map(this::convertToSchedule)
                     .filter(Objects::nonNull)
-                    .forEach(scheduleList::add);
+                    .toList();
         }
-
-        return scheduleList;
     }
 
     private Schedule convertToSchedule(String line) {

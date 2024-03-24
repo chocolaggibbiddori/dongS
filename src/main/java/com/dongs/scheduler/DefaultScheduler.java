@@ -35,6 +35,7 @@ final class DefaultScheduler extends EnumMap<DayOfWeek, Set<Schedule>> implement
 
     @Override
     public void readAndInspect(String csvPath) throws InvalidExtensionException, FileNotFoundException {
+        // TODO [2024-03-21]: 자동 삭제 기능 추가 필요
         Objects.requireNonNull(csvPath, "csvPath is null");
 
         try (CsvReader reader = new CsvReader(csvPath)) {
