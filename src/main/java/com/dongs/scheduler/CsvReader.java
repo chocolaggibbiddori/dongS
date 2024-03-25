@@ -37,6 +37,10 @@ class CsvReader extends LineNumberReader {
         }
     }
 
+    private boolean isAnnotation(String line) {
+        return line.startsWith("//");
+    }
+
     private Schedule convertToSchedule(String line) {
         try {
             return scheduleFromCsvString(line);
@@ -46,10 +50,6 @@ class CsvReader extends LineNumberReader {
             log.warning(lineMessage(lineNumber, message));
             return null;
         }
-    }
-
-    private boolean isAnnotation(String line) {
-        return line.startsWith("//");
     }
 
     private Schedule scheduleFromCsvString(String line) {
@@ -84,7 +84,7 @@ class CsvReader extends LineNumberReader {
         }
 
         if (isInvalidDate(LocalDate.now(), endDate)) {
-            throw new IllegalArgumentException("Illegal endDate [%s]. It's already over".formatted(parts[2].trim()));
+            throw new IllegalArgumentException("Illegal endDate [%s]. It's already over".formatted(endDate));
         }
 
         if (isInvalidTime(startTime, endTime)) {
