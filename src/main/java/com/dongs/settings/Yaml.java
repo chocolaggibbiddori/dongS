@@ -12,6 +12,7 @@ import java.lang.reflect.Method;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Stream;
 
 @Log
 final class Yaml {
@@ -44,10 +45,12 @@ final class Yaml {
     }
 
     private static void parseYamlToNodeTree(BufferedReader reader) {
-        reader.lines()
-                .filter(Yaml::isNotAnnotation)
-                .map(Yaml::removeAnnotation)
-                .forEach(Yaml::createNodeTree);
+        try (Stream<String> lines = reader.lines()) {
+            lines
+                    .filter(Yaml::isNotAnnotation)
+                    .map(Yaml::removeAnnotation)
+                    .forEach(Yaml::createNodeTree);
+        }
     }
 
     private static boolean isNotAnnotation(String s) {
