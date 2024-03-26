@@ -47,6 +47,7 @@ final class Yaml {
     private static void parseYamlToNodeTree(BufferedReader reader) {
         try (Stream<String> lines = reader.lines()) {
             lines
+                    .filter(l -> !l.isBlank())
                     .filter(Yaml::isNotAnnotation)
                     .map(Yaml::removeAnnotation)
                     .forEach(Yaml::createNodeTree);
