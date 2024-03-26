@@ -11,6 +11,7 @@ public class Setting {
     private static final Setting INSTANCE = new Setting();
 
     private final Schedule schedule = Schedule.getInstance();
+    private final Data data = Data.getInstance();
 
     private Setting() {
         String prefix = "src/main/resources/";
@@ -45,5 +46,9 @@ public class Setting {
 
     public Schedule schedule() {
         return schedule;
+    }
+
+    public Data data() {
+        return data;
     }
 }
