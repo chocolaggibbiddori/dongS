@@ -14,30 +14,20 @@ public class Setting {
     private final Data data = Data.getInstance();
 
     private Setting() {
-        String prefix = "src/main/resources/";
-        String filename = "config";
-
-        try {
-            String firstPath = getPath(prefix, filename, ".yml");
-            String secondPath = getPath(prefix, filename, ".yaml");
-            if (tryReadSettings(firstPath) || tryReadSettings(secondPath)) return;
-        } catch (InvalidExtensionException ignored) {
-        }
+        if (tryReadSettings("src/main/resources/config.yml") ||
+            tryReadSettings("src/main/resources/config.yaml"))
+            return;
 
         log.info("There is no configuration file");
     }
 
-    private boolean tryReadSettings(String configPath) throws InvalidExtensionException {
+    private boolean tryReadSettings(String configPath) {
         try {
             Yaml.readSettings(configPath);
             return true;
-        } catch (FileNotFoundException e) {
+        } catch (FileNotFoundException | InvalidExtensionException e) {
             return false;
         }
-    }
-
-    private String getPath(String prefix, String filename, String suffix) {
-        return prefix + filename + suffix;
     }
 
     public static Setting getInstance() {
