@@ -1,7 +1,7 @@
 package com.dongs.scheduler;
 
 import com.dongs.common.exception.InvalidExtensionException;
-import lombok.extern.java.Log;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Stream;
 
-@Log
+@Slf4j
 class CsvReader extends LineNumberReader {
 
     CsvReader(String csvPath) throws FileNotFoundException, InvalidExtensionException {
@@ -47,7 +47,7 @@ class CsvReader extends LineNumberReader {
         } catch (IllegalArgumentException e) {
             int lineNumber = getLineNumber();
             String message = e.getMessage();
-            log.warning(lineMessage(lineNumber, message));
+            log.warn("Line {}: {}", lineNumber, message);
             return null;
         }
     }
@@ -118,9 +118,5 @@ class CsvReader extends LineNumberReader {
 
     private boolean isInvalidTime(LocalTime before, LocalTime after) {
         return before.isAfter(after);
-    }
-
-    private String lineMessage(int num, String msg) {
-        return "Line %d: %s".formatted(num, msg);
     }
 }

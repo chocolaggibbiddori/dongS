@@ -3,11 +3,11 @@ package com.dongs;
 import com.dongs.common.exception.InvalidExtensionException;
 import com.dongs.scheduler.Scheduler;
 import com.dongs.settings.Setting;
-import lombok.extern.java.Log;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.FileNotFoundException;
 
-@Log
+@Slf4j
 public class Main {
 
     public static void main(String[] args) {
@@ -18,7 +18,7 @@ public class Main {
 
         try {
             scheduler.readAndInspect(filePath);
-            System.out.println("Finish!");
+            log.info("Finish!");
         } catch (InvalidExtensionException | FileNotFoundException e) {
             log.info("There is no data file");
         }

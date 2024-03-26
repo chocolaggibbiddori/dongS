@@ -1,7 +1,7 @@
 package com.dongs.settings;
 
 import com.dongs.common.exception.InvalidExtensionException;
-import lombok.extern.java.Log;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
@@ -14,7 +14,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Stream;
 
-@Log
+@Slf4j
 final class Yaml {
 
     private Yaml() {
@@ -30,7 +30,7 @@ final class Yaml {
         } catch (FileNotFoundException e) {
             throw e;
         } catch (IOException e) {
-            log.warning(e.getMessage());
+            log.warn(e.getMessage());
         }
 
         return Setting.getInstance();

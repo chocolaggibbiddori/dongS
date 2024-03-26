@@ -1,7 +1,7 @@
 package com.dongs.scheduler;
 
 import com.dongs.common.exception.InvalidExtensionException;
-import lombok.extern.java.Log;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -10,7 +10,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.*;
 
-@Log
+@Slf4j
 final class DefaultScheduler extends EnumMap<DayOfWeek, Set<Schedule>> implements Scheduler {
 
     private static final DefaultScheduler INSTANCE = new DefaultScheduler(DayOfWeek.class);
@@ -44,7 +44,7 @@ final class DefaultScheduler extends EnumMap<DayOfWeek, Set<Schedule>> implement
         } catch (InvalidExtensionException | FileNotFoundException e) {
             throw e;
         } catch (IOException e) {
-            log.warning(e.getMessage());
+            log.warn(e.getMessage());
         }
     }
 
@@ -56,7 +56,7 @@ final class DefaultScheduler extends EnumMap<DayOfWeek, Set<Schedule>> implement
 
             for (Schedule sch : scheduleSet) {
                 if (isClash(sch, schedule)) {
-                    log.info("[Clash] \"%s\" is impossible. cause: %s".formatted(schedule.getTitle(), sch));
+                    log.info("[Clash] \"{}\" is impossible. Cause: {}", schedule.getTitle(), sch);
                     clash = true;
                     break;
                 }

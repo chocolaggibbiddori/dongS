@@ -1,11 +1,11 @@
 package com.dongs.settings;
 
 import com.dongs.common.exception.InvalidExtensionException;
-import lombok.extern.java.Log;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.FileNotFoundException;
 
-@Log
+@Slf4j
 public class Setting {
 
     private static final Setting INSTANCE = new Setting();
