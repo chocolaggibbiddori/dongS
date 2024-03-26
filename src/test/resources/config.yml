@@ -8,3 +8,6 @@ schedule:
     test6: 6
   test7: 7
   test8:
+
+data:
+  filename: config
