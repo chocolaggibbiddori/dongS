@@ -2,6 +2,7 @@ package com.dongs;
 
 import com.dongs.common.exception.InvalidExtensionException;
 import com.dongs.scheduler.Scheduler;
+import com.dongs.settings.Setting;
 import lombok.extern.java.Log;
 
 import java.io.FileNotFoundException;
@@ -10,7 +11,9 @@ import java.io.FileNotFoundException;
 public class Main {
 
     public static void main(String[] args) {
-        String filePath = "src/main/resources/data.csv";
+        Setting setting = Setting.getInstance();
+        String dataFilename = setting.data().filename().value();
+        String filePath = "src/main/resources/%s.csv".formatted(dataFilename);
         Scheduler scheduler = Scheduler.getInstance();
 
         try {
