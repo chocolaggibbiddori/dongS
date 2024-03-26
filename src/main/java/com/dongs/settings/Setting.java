@@ -13,13 +13,30 @@ public class Setting {
     private final Schedule schedule = Schedule.getInstance();
 
     private Setting() {
-        String configPath = "src/main/resources/config.yml";
+        String prefix = "src/main/resources/";
+        String filename = "config";
 
         try {
-            Yaml.readSettings(configPath);
-        } catch (InvalidExtensionException | FileNotFoundException e) {
-            log.info("There is no configuration file");
+            String firstPath = getPath(prefix, filename, ".yml");
+            String secondPath = getPath(prefix, filename, ".yaml");
+            if (tryReadSettings(firstPath) || tryReadSettings(secondPath)) return;
+        } catch (InvalidExtensionException ignored) {
         }
+
+        log.info("There is no configuration file");
+    }
+
+    private boolean tryReadSettings(String configPath) throws InvalidExtensionException {
+        try {
+            Yaml.readSettings(configPath);
+            return true;
+        } catch (FileNotFoundException e) {
+            return false;
+        }
+    }
+
+    private String getPath(String prefix, String filename, String suffix) {
+        return prefix + filename + suffix;
     }
 
     public static Setting getInstance() {
