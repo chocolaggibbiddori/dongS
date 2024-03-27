@@ -2,7 +2,7 @@ package com.dongs.settings;
 
 import com.dongs.settings.interfaces.ValueSetting;
 
-public class Data {
+public final class Data extends AbstractParentSetting {
 
     private static final Data INSTANCE = new Data();
 

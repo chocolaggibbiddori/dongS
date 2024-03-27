@@ -1,8 +1,11 @@
 package com.dongs.settings;
 
-import com.dongs.settings.interfaces.ValueSetting;
-
-record Filename(String value) implements ValueSetting<String> {
+record Filename(String value) implements ChildSetting<Filename, String> {
 
     static final Filename DEFAULT = new Filename("data");
+
+    @Override
+    public Filename getDefault() {
+        return DEFAULT;
+    }
 }

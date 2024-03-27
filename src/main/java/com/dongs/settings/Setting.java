@@ -3,7 +3,7 @@ package com.dongs.settings;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class Setting {
+public final class Setting extends AbstractParentSetting {
 
     private static final Setting INSTANCE = new Setting();
 
