@@ -33,6 +33,17 @@ public class Schedule implements Comparable<Schedule> {
         return "[%s %s ~ %s (%s) %s ~ %s]".formatted(title, startDate, endDate, dayOfWeek, startTime, endTime);
     }
 
+    public String toCsvString() {
+        return "%s|%s|%s|%s|%s|%s".formatted(
+                title,
+                startDate,
+                endDate,
+                getDayOfWeekToString(),
+                startTime,
+                endTime
+        );
+    }
+
     @Override
     public int compareTo(Schedule s) {
         if (this.dayOfWeek != s.dayOfWeek) {
@@ -40,5 +51,17 @@ public class Schedule implements Comparable<Schedule> {
         }
 
         return this.startTime.compareTo(s.startTime);
+    }
+
+    public String getDayOfWeekToString() {
+        return switch (dayOfWeek) {
+            case MONDAY -> "월";
+            case TUESDAY -> "화";
+            case WEDNESDAY -> "수";
+            case THURSDAY -> "목";
+            case FRIDAY -> "금";
+            case SATURDAY -> "토";
+            case SUNDAY -> "일";
+        };
     }
 }

@@ -1,14 +1,19 @@
 package com.dongs.scheduler;
 
 import com.dongs.common.exception.InvalidExtensionException;
+import com.dongs.settings.Setting;
 import lombok.extern.slf4j.Slf4j;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
+import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.*;
+
+import static com.dongs.common.Paths.getResourcesPathInMain;
 
 @Slf4j
 final class DefaultScheduler extends EnumMap<DayOfWeek, Set<Schedule>> implements Scheduler {
@@ -35,12 +40,14 @@ final class DefaultScheduler extends EnumMap<DayOfWeek, Set<Schedule>> implement
 
     @Override
     public void readAndInspect(String csvPath) throws InvalidExtensionException, FileNotFoundException {
-        // TODO [2024-03-21]: 자동 삭제 기능 추가 필요
         Objects.requireNonNull(csvPath, "csvPath is null");
 
         try (CsvReader reader = new CsvReader(csvPath)) {
-            List<Schedule> scheduleList = reader.readSchedules();
-            inspect(scheduleList);
+            List<Schedule> oldScheduleList = reader.readSchedules();
+            List<Schedule> newScheduleList = inspect(oldScheduleList);
+
+            boolean removed = oldScheduleList.size() > newScheduleList.size();
+            autoRemove(csvPath, newScheduleList, removed);
         } catch (InvalidExtensionException | FileNotFoundException e) {
             throw e;
         } catch (IOException e) {
@@ -48,7 +55,9 @@ final class DefaultScheduler extends EnumMap<DayOfWeek, Set<Schedule>> implement
         }
     }
 
-    private void inspect(Collection<Schedule> schedules) {
+    private List<Schedule> inspect(Collection<Schedule> schedules) {
+        List<Schedule> result = new ArrayList<>();
+
         for (Schedule schedule : schedules) {
             DayOfWeek key = schedule.getDayOfWeek();
             Set<Schedule> scheduleSet = get(key);
@@ -64,8 +73,11 @@ final class DefaultScheduler extends EnumMap<DayOfWeek, Set<Schedule>> implement
 
             if (!clash) {
                 scheduleSet.add(schedule);
+                result.add(schedule);
             }
         }
+
+        return result;
     }
 
     private boolean isClash(Schedule s1, Schedule s2) {
@@ -96,5 +108,47 @@ final class DefaultScheduler extends EnumMap<DayOfWeek, Set<Schedule>> implement
         }
 
         return false;
+    }
+
+    private void autoRemove(String csvPath, List<Schedule> scheduleList, boolean removed) {
+        Setting setting = Setting.getInstance();
+        boolean autoRemove = setting.schedule().autoRemove().value();
+
+        if (autoRemove) {
+            File dataFile = new File(csvPath);
+            createBackupDataFile(dataFile, removed);
+            dataFile.delete();
+            createDataFileByAutoRemove(dataFile, scheduleList);
+        }
+    }
+
+    private void createBackupDataFile(File file, boolean removed) {
+        if (removed) {
+            String backupDataFilePath = getResourcesPathInMain("backup/", file.getName(), "");
+            Path path = file.toPath();
+            Path target = Paths.get(backupDataFilePath);
+
+            try {
+                Files.deleteIfExists(target);
+                Files.copy(path, target);
+            } catch (IOException e) {
+                log.warn(e.getMessage());
+            }
+        }
+    }
+
+    private void createDataFileByAutoRemove(File file, List<Schedule> scheduleList) {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
+            for (Schedule schedule : scheduleList) {
+                String csvString = schedule.toCsvString();
+
+                writer.append(csvString);
+                writer.newLine();
+            }
+
+            writer.flush();
+        } catch (IOException e) {
+            log.warn(e.getMessage());
+        }
     }
 }
