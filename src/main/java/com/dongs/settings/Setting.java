@@ -1,9 +1,6 @@
 package com.dongs.settings;
 
-import com.dongs.common.exception.InvalidExtensionException;
 import lombok.extern.slf4j.Slf4j;
-
-import java.io.FileNotFoundException;
 
 @Slf4j
 public class Setting {
@@ -14,20 +11,6 @@ public class Setting {
     private final Data data = Data.getInstance();
 
     private Setting() {
-        if (tryReadSettings("src/main/resources/config.yml") ||
-            tryReadSettings("src/main/resources/config.yaml"))
-            return;
-
-        log.info("There is no configuration file");
-    }
-
-    private boolean tryReadSettings(String configPath) {
-        try {
-            Yaml.readSettings(configPath);
-            return true;
-        } catch (FileNotFoundException | InvalidExtensionException e) {
-            return false;
-        }
     }
 
     public static Setting getInstance() {
