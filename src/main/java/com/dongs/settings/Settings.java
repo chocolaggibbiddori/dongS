@@ -9,6 +9,8 @@ import java.io.IOException;
 @Slf4j
 public final class Settings {
 
+    public static final String[] SETTING_FILE_PATHS = {"src/main/resources/config.yml", "src/main/resources/config.yaml"};
+
     private Settings() {
     }
 
@@ -19,11 +21,15 @@ public final class Settings {
     }
 
     public static Setting readSettingFromConfigYaml() {
-        if (!tryReadSettings("src/main/resources/config.yml") &&
-            !tryReadSettings("src/main/resources/config.yaml"))
-            log.info("There is no configuration file");
+        Setting setting = Setting.getInstance();
 
-        return Setting.getInstance();
+        for (String settingFilePath : SETTING_FILE_PATHS) {
+            boolean success = tryReadSettings(settingFilePath);
+            if (success) return setting;
+        }
+
+        log.info("There is no configuration file");
+        return setting;
     }
 
     private static boolean tryReadSettings(String configPath) {
