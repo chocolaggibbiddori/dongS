@@ -6,8 +6,10 @@ schedule:
     test4:
       test5: 5
     test6: 6
-  test7: 7
+  test7: 7    # annotation
   test8:
+
+# annotation
 
 data:
   filename: config
