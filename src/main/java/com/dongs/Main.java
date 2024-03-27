@@ -1,5 +1,6 @@
 package com.dongs;
 
+import com.dongs.common.Paths;
 import com.dongs.common.exception.InvalidExtensionException;
 import com.dongs.scheduler.Scheduler;
 import com.dongs.settings.Setting;
@@ -14,7 +15,7 @@ public class Main {
     public static void main(String[] args) {
         Setting setting = Settings.readSettingFromConfigYaml();
         String dataFilename = setting.data().filename().value();
-        String filePath = "src/main/resources/%s.csv".formatted(dataFilename);
+        String filePath = Paths.getResourcesPathInMain("", dataFilename, ".csv");
         Scheduler scheduler = Scheduler.getInstance();
 
         try {

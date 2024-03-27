@@ -1,5 +1,6 @@
 package com.dongs.settings;
 
+import com.dongs.common.Paths;
 import com.dongs.common.exception.InvalidExtensionException;
 import lombok.extern.slf4j.Slf4j;
 
@@ -9,7 +10,10 @@ import java.io.IOException;
 @Slf4j
 public final class Settings {
 
-    public static final String[] SETTING_FILE_PATHS = {"src/main/resources/config.yml", "src/main/resources/config.yaml"};
+    public static final String[] SETTING_FILE_PATHS = {
+            Paths.getResourcesPathInMain("", "config", ".yml"),
+            Paths.getResourcesPathInMain("", "config", ".yaml")
+    };
 
     private Settings() {
     }
