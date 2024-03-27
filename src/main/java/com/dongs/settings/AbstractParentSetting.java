@@ -13,6 +13,8 @@ abstract class AbstractParentSetting {
             if (Modifier.isStatic(field.getModifiers())) continue;
 
             Class<?> fieldType = field.getType();
+            field.setAccessible(true);
+
             Object o;
             try {
                 o = field.get(this);
@@ -27,7 +29,7 @@ abstract class AbstractParentSetting {
             } else {
                 DefaultValue defaultValue = (DefaultValue) o;
                 Object defaultObject = defaultValue.getDefault();
-                field.setAccessible(true);
+
                 try {
                     field.set(this, defaultObject);
                 } catch (IllegalAccessException e) {
