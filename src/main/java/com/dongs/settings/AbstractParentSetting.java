@@ -27,7 +27,7 @@ abstract class AbstractParentSetting {
                 AbstractParentSetting parentSetting = parentSettingClass.cast(o);
                 parentSetting.init();
             } else {
-                DefaultValue defaultValue = (DefaultValue) o;
+                DefaultValue<?> defaultValue = (DefaultValue<?>) o;
                 Object defaultObject = defaultValue.getDefault();
 
                 try {
