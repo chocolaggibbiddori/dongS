@@ -5,8 +5,8 @@ public class Paths {
     public static final String MAIN_RESOURCES_ROOT = "src/main/resources/";
     public static final String TEST_RESOURCES_ROOT = "src/test/resources/";
 
-    private static final String MAIN_RESOURCES_FILE = "src/main/resources/%s%s%s";
-    private static final String TEST_RESOURCES_FILE = "src/test/resources/%s%s%s";
+    private static final String MAIN_RESOURCES_FILE = "src/main/resources/%s/%s%s";
+    private static final String TEST_RESOURCES_FILE = "src/test/resources/%s/%s%s";
 
     private Paths() {
     }
