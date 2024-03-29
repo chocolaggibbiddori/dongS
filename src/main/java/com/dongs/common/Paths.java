@@ -12,10 +12,12 @@ public class Paths {
     }
 
     public static String getResourcesPathInMain(String directory, String filename, String extension) {
+        if (directory.isBlank()) directory = ".";
         return MAIN_RESOURCES_FILE.formatted(directory, filename, extension);
     }
 
     public static String getResourcesPathInTest(String directory, String filename, String extension) {
+        if (directory.isBlank()) directory = ".";
         return TEST_RESOURCES_FILE.formatted(directory, filename, extension);
     }
 }

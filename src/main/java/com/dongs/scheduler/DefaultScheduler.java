@@ -125,7 +125,7 @@ final class DefaultScheduler extends EnumMap<DayOfWeek, Set<Schedule>> implement
     private void createBackupDataFile(File file, boolean removed) {
         if (!removed) return;
 
-        String backupDataFilePath = getResourcesPathInMain("backup/", file.getName(), "");
+        String backupDataFilePath = getResourcesPathInMain("backup", file.getName(), "");
         Path path = file.toPath();
         Path target = Paths.get(backupDataFilePath);
 
