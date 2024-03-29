@@ -83,12 +83,12 @@ class CsvReader extends LineNumberReader {
             throw new IllegalArgumentException("Illegal dayOfWeek! dayOfWeek must exist between startDate and endDate");
         }
 
-        if (isInvalidDate(LocalDate.now(), endDate)) {
-            throw new IllegalArgumentException("Illegal endDate [%s]. It's already over".formatted(endDate));
-        }
-
         if (isInvalidTime(startTime, endTime)) {
             throw new IllegalArgumentException("Illegal startTime and endTime! startTime must be before endTime");
+        }
+
+        if (isInvalidDate(LocalDate.now(), endDate)) {
+            log.info("Illegal endDate [%s]. It's already over".formatted(endDate));
         }
 
         return Schedule.of(title, dayOfWeek, startTime, endTime, startDate, endDate);

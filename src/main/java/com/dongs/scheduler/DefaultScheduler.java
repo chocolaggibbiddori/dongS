@@ -43,11 +43,9 @@ final class DefaultScheduler extends EnumMap<DayOfWeek, Set<Schedule>> implement
         Objects.requireNonNull(csvPath, "csvPath is null");
 
         try (CsvReader reader = new CsvReader(csvPath)) {
-            List<Schedule> oldScheduleList = reader.readSchedules();
-            List<Schedule> newScheduleList = inspect(oldScheduleList);
-
-            boolean removed = oldScheduleList.size() > newScheduleList.size();
-            autoRemove(csvPath, newScheduleList, removed);
+            List<Schedule> scheduleList = reader.readSchedules();
+            inspect(scheduleList);
+            autoRemove(csvPath, scheduleList);
         } catch (InvalidExtensionException | FileNotFoundException e) {
             throw e;
         } catch (IOException e) {
@@ -55,9 +53,7 @@ final class DefaultScheduler extends EnumMap<DayOfWeek, Set<Schedule>> implement
         }
     }
 
-    private List<Schedule> inspect(Collection<Schedule> schedules) {
-        List<Schedule> result = new ArrayList<>();
-
+    private void inspect(Collection<Schedule> schedules) {
         for (Schedule schedule : schedules) {
             DayOfWeek key = schedule.getDayOfWeek();
             Set<Schedule> scheduleSet = get(key);
@@ -73,11 +69,8 @@ final class DefaultScheduler extends EnumMap<DayOfWeek, Set<Schedule>> implement
 
             if (!clash) {
                 scheduleSet.add(schedule);
-                result.add(schedule);
             }
         }
-
-        return result;
     }
 
     private boolean isClash(Schedule s1, Schedule s2) {
@@ -110,16 +103,23 @@ final class DefaultScheduler extends EnumMap<DayOfWeek, Set<Schedule>> implement
         return false;
     }
 
-    private void autoRemove(String csvPath, List<Schedule> scheduleList, boolean removed) {
+    private void autoRemove(String csvPath, List<Schedule> scheduleList) {
         Setting setting = Setting.getInstance();
         boolean autoRemove = setting.schedule().autoRemove().value();
+        if (!autoRemove) return;
 
-        if (autoRemove) {
-            File dataFile = new File(csvPath);
-            createBackupDataFile(dataFile, removed);
-            dataFile.delete();
-            createDataFileByAutoRemove(dataFile, scheduleList);
-        }
+        File dataFile = new File(csvPath);
+        List<Schedule> newScheduleList = scheduleList.stream()
+                .filter(s -> {
+                    LocalDate endDate = s.getEndDate();
+                    return !endDate.isBefore(LocalDate.now());
+                })
+                .toList();
+
+        boolean removed = scheduleList.size() > newScheduleList.size();
+        createBackupDataFile(dataFile, removed);
+        dataFile.delete();
+        createDataFileByAutoRemove(dataFile, newScheduleList);
     }
 
     private void createBackupDataFile(File file, boolean removed) {
