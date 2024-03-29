@@ -29,6 +29,16 @@ public class Schedule implements Comparable<Schedule> {
         return new Schedule(title, dayOfWeek, startTime, endTime, startDate, endDate);
     }
 
+    @Override
+    public int compareTo(Schedule s) {
+        if (this.dayOfWeek != s.dayOfWeek) {
+            return this.dayOfWeek.compareTo(s.dayOfWeek);
+        }
+
+        return this.startTime.compareTo(s.startTime);
+    }
+
+    @Override
     public String toString() {
         return "[%s %s ~ %s (%s) %s ~ %s]".formatted(title, startDate, endDate, dayOfWeek, startTime, endTime);
     }
@@ -42,15 +52,6 @@ public class Schedule implements Comparable<Schedule> {
                 startTime,
                 endTime
         );
-    }
-
-    @Override
-    public int compareTo(Schedule s) {
-        if (this.dayOfWeek != s.dayOfWeek) {
-            return this.dayOfWeek.compareTo(s.dayOfWeek);
-        }
-
-        return this.startTime.compareTo(s.startTime);
     }
 
     public String getDayOfWeekToString() {
