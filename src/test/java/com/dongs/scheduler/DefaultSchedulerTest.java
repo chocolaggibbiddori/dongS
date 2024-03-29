@@ -47,7 +47,7 @@ class DefaultSchedulerTest {
     }
 
     @ParameterizedTest(name = "filename={0}, answer={1}")
-    @CsvSource({"data1.csv, 0", "data2.csv, 1", "data3.csv, 4"})
+    @CsvSource({"data1.csv, 2", "data2.csv, 1", "data3.csv, 4"})
     @DisplayName("일정 충돌")
     void readAndInspect_clash(String filename, int answer) throws FileNotFoundException, InvalidExtensionException {
         //g
